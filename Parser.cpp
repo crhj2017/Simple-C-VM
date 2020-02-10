@@ -16,7 +16,7 @@ ui32 mapToNumber(string s);
 int main() {
 	//Read Input
 	ifstream infile;
-	infile.open("test.txt",ios::in);
+	infile.open("input.txt",ios::in);
 	if (!infile.is_open()) {
 		cout << "Error: Could not open [Test]" << endl;
 		exit(1);
@@ -37,7 +37,7 @@ int main() {
 
 	//Write to binary file
 	ofstream ofile;
-	ofile.open("../../os/os/out.bin", ios::binary);
+	ofile.open("out.bin", ios::binary);
 	if (!ofile.is_open()) {
 		cout << "Error: Could not write to [out.bin]" << endl;
 		exit(1);
@@ -61,7 +61,7 @@ vector<ui32> compileToInstruction(strings s) {
 				instructions.push_back(instruction);
 			}
 			else {
-				cout << "Error: Invalid instruction [" << s[i] << "]" << endl;
+				cout << "Error: Invalid instruction present [" << s[i] << "]" << endl;
 			}
 		}
 	}
@@ -81,16 +81,16 @@ bool isInteger(string s) {
 
 ui32 mapToNumber(string s) {
 	if (s == "+") {
-		return 0x40000001;
+		return 0x40000001;	//Defined in doPrimitive()
 	}
 	else if (s == "-") {
-		return 0x40000002;
+		return 0x40000002;	//""
 	}
 	else if (s == "*") {
-		return 0x40000003;
+		return 0x40000003;	//""
 	}
 	else if (s == "/") {
-		return 0x40000004;
+		return 0x40000004;	//As above
 	}
 	return -1; //invalid instruction
 }
