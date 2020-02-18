@@ -2,6 +2,6 @@
 
 ## To do:
 
-Write makefile
+Create a parser to output AST
 
-Update lexer + parser to include more logic
+Write Interpreter
