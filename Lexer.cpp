@@ -1,7 +1,7 @@
 #include "Lexer.h"
 
-strings Lexer::lex(string s) {
-	strings strlst;
+tokvector Lexer::lex(string s) {
+	tokvector strlst;
 	char lexeme[256];
 	int i = 0;
 	int j = 0; 
@@ -11,13 +11,18 @@ strings Lexer::lex(string s) {
 	int len = s.length();
 
 	while (i < len) {
+		
+		// Finite state machine
 		switch (state) {
+				
 		case START:
-			if (my_isspace(s[i])) {	//Skip Spaces
+			// Skip Spaces
+			if (my_isspace(s[i])) {
 				state = SKIP;
-
 			}
-			else if(isgroup(s[i])){	//Adds groups to Lexeme
+				
+			// Adds groups to Lexeme
+			else if(isgroup(s[i])){
 				if (s[i] == '"') {
 					lexeme[j] = s[i];
 					j++;
@@ -25,18 +30,24 @@ strings Lexer::lex(string s) {
 				}
 				state = READBLOCK;
 			}
-			else if (s[i] == '/' && s[i+1] == '/') { //Skips Comments
+				
+			// Skips Comments
+			else if (s[i] == '/' && s[i+1] == '/') {
 				i += 2;
 				state = COMMENT;
 			}
-			else {	//Read character
+				
+			// Read character
+			else {
 				state = READCHAR;
 			}
 			break;
 		case READCHAR:
+			// End of lexeme
 			if (my_isspace(s[i])) {
 				state = DUMP;
 			}
+				
 			else if (s[i] == '\\') {
 				i += 2;
 			}
@@ -103,7 +114,8 @@ strings Lexer::lex(string s) {
 		case DUMP:
 			if (j > 0) {
 				lexeme[j] = 0;
-				strlst.push_back(lexeme);
+				Token tok(lexeme);
+				strlst.push_back(tok);
 				j = 0;
 			}
 			state = START;
@@ -123,7 +135,8 @@ strings Lexer::lex(string s) {
 	}
 	if (j > 0) {
 		lexeme[j] = 0;
-		strlst.push_back(lexeme);
+		Token tok(lexeme);
+		strlst.push_back(tok);
 	}
 	return strlst;
 }
@@ -167,6 +180,7 @@ bool Lexer::isspecial(char c) {
 	switch (c) {
 	case '[':
 	case ']':
+	case ';':
 		return true;
 	default:
 		return false;
