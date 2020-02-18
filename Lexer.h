@@ -19,6 +19,47 @@ enum State : byte { //Defines byte's possible states
 	END
 };
 
+// Class for a token
+class Token {
+public:
+	strings Type = { "Operator","Number","Identifier","Equal","Keyword","End","Unexpected" };
+
+	// Token attributes
+	string tokType;
+	string tokVal;
+
+	// Constructor function
+	Token(string value) {
+		tokVal = value;
+		if (value == "+" || value == "-" || value == "*" || value == "/") {
+			tokType = Type[0];
+		}
+		else if (isdigit(value[0])) {
+			tokType = Type[1];
+		}
+		else if (isalpha(value[0])) {
+			if (value == "print") {
+				tokType = Type[4];
+			}
+			else {
+				tokType = Type[2];
+			}
+		}
+		else if (value == "=") {
+			tokType = Type[3];
+		}
+		else if (value == ";") {
+			tokType = Type[5];
+		}
+		else {
+			tokType = Type[6];
+		}
+	}
+};
+
+// Definition of token vector for parser to read
+typedef vector<Token> tokvector;
+
 class Lexer { //Class for Lexer
 	bool my_isspace(char c);
 	bool isspecial(char c);
@@ -27,6 +68,6 @@ class Lexer { //Class for Lexer
 	char end_char, beg_char;
 
 public:
-	strings lex(string s);
+	tokvector lex(string s);
 };
 #endif
