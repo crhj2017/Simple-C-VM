@@ -1,26 +1,26 @@
-#include <iostream>
-#include <fstream>
-#include <string>
 #include "Lexer.h"
 
 typedef uint32_t ui32;
-
 using namespace std;
 
 //Functions
-vector<ui32> compileToInstruction(strings s);
+vector<ui32> compileToInstruction(tokvector s);
 bool isInteger(string s);
-bool isPrimitive(string s);
 ui32 mapToNumber(string s);
+class Token;
 
 int main() {
-	//Read Input
+	// Read Input
 	ifstream infile;
 	infile.open("input.txt",ios::in);
+	
+	// Output error if file cannot be opened
 	if (!infile.is_open()) {
 		cout << "Error: Could not open [Test]" << endl;
 		exit(1);
 	}
+	
+	// Get all file data
 	string line;
 	string contents;
 	while (getline(infile,line)) {
@@ -28,9 +28,16 @@ int main() {
 	}
 	infile.close();
 
-	//Parse file
+	// Lex file
 	Lexer lexer;
-	strings lexemes = lexer.lex(contents);
+	tokvector lexemes = lexer.lex(contents);
+	
+	// Output tokens
+	cout << "Lexed:" << endl;
+
+	for (size_t x = 0; x < lexemes.size(); x ++) {
+		cout << lexemes[x].tokType << ": " << lexemes[x].tokVal << "\n";
+	}
 
 	//Compile to binary
 	vector<ui32> instructions = compileToInstruction(lexemes);
@@ -49,23 +56,34 @@ int main() {
 	return 0;
 }
 
-vector<ui32> compileToInstruction(strings s) {
+// Main compilation function
+vector<ui32> compileToInstruction(tokvector s) {
 	vector<ui32> instructions;
-	for (ui32 i = 0; i < s.size(); i++) {
-		if (isInteger(s[i])) {
-			instructions.push_back(stoi(s[i]));
+
+	// Loop through token
+	for (ui32 i = 0; i < s.size(); i += 2) {
+
+		// Check token type and respond accordingly
+		if (s[i].tokType == "Literal") {
+			instructions.push_back(stoi(s[i+1].tokType));
 		}
-		else {
-			ui32 instruction = mapToNumber(s[i]);
+		else if (s[i].tokType == "Operator"){
+
+			// Check operator type
+			ui32 instruction = mapToNumber(s[i+1].tokType);
 			if (instruction != -1) {
 				instructions.push_back(instruction);
 			}
+
+			// Return error if instruction undefined in compiler
 			else {
-				cout << "Error: Invalid instruction present [" << s[i] << "]" << endl;
+				cout << "Error: Invalid instruction \"" << s[i+1] << "\"" << endl;
 			}
 		}
 	}
-	instructions.push_back(0x40000000); //Always halt at the end
+
+	// Add halt code and return instruction set
+	instructions.push_back(0x40000000);
 	return instructions;
 }
 
