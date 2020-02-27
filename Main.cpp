@@ -1,13 +1,10 @@
 #include "Lexer.h"
 
-typedef uint32_t ui32;
-using namespace std;
-
 //Functions
-vector<ui32> compileToInstruction(strings s);
+vector<i32> compileToInstruction(strings s);
 bool isInteger(string s);
 bool isPrimitive(char c);
-ui32 mapToNumber(string s);
+i32 mapToNumber(string s);
 
 int main() {
 	// Read Input
@@ -52,28 +49,21 @@ int main() {
 		}
 	
 	// Compile to instructions
-	vector<ui32> instructions = compileToInstruction(postOrder);
-
-	//Write to binary file
-	ofstream ofile;
-	ofile.open("out.bin", ios::binary);
-	if (!ofile.is_open()) {
-		cout << "Error: Could not write to [out.bin]" << endl;
-		exit(1);
-	}
-	for (ui32 i = 0; i < instructions.size(); i++) {
-		ofile.write(reinterpret_cast<char *>(&instructions[i]), sizeof(ui32));
-	}
-	ofile.close();
+	vector<i32> instructions = compileToInstruction(postOrder);
+	
+	StackVM vm;
+	vm.loadProgram(instructions);
+	vm.run();
+	
 	return 0;
 }
 
 // Main compilation function
-vector<ui32> compileToInstruction(strings s) {
-	vector<ui32> instructions;
+vector<i32> compileToInstruction(strings s) {
+	vector<i32> instructions;
 
 	// Loop through token
-	for (ui32 i = 0; i < s.size(); i++) {
+	for (i32 i = 0; i < s.size(); i++) {
 
 		// Check token type and respond accordingly
 		if (isInteger(s[i])) {
@@ -81,7 +71,7 @@ vector<ui32> compileToInstruction(strings s) {
 		}
 		else if (isPrimitive(s[i][0])){
 			// Check operator type
-			ui32 instruction = mapToNumber(s[i]);
+			i32 instruction = mapToNumber(s[i]);
 			if (instruction != -1) {
 				instructions.push_back(instruction);
 			}
@@ -99,7 +89,7 @@ vector<ui32> compileToInstruction(strings s) {
 }
 
 bool isInteger(string s) {
-	for (ui32 i = 0; i < s.length(); i++) {
+	for (i32 i = 0; i < s.length(); i++) {
 		if (!isdigit(s[i])) {
 			return false;
 		}
@@ -120,7 +110,7 @@ bool isPrimitive(char c) {
 	}
 }
 
-ui32 mapToNumber(string s) {
+i32 mapToNumber(string s) {
 	if (s == "+") {
 		return 0x40000001;	//Defined in doPrimitive()
 	}
