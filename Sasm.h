@@ -1,5 +1,5 @@
-#ifndef LEXER_H
-#define LEXER_H
+#ifndef SASM_H
+#define SASM_H
 
 #include <iostream>
 #include <vector>
@@ -14,6 +14,9 @@ using namespace std;
 // Define types for later
 typedef uint8_t byte; 
 typedef int32_t i32;
+
+bool isPrimitive(char c);
+bool isInteger(string s);
 
 typedef vector<string> strings;
 enum State : byte { START, READCHAR, READBLOCK, SKIP, DUMP, COMMENT, END };
