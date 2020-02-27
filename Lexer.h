@@ -11,12 +11,37 @@
 #include <algorithm>
 using namespace std;
 
-typedef uint8_t byte; //Defines a byte
-typedef vector<string> strings;
+// Define types for later
+typedef uint8_t byte; 
+typedef int32_t i32;
 
-//Defines byte's possible states
+typedef vector<string> strings;
 enum State : byte { START, READCHAR, READBLOCK, SKIP, DUMP, COMMENT, END };
 enum typeState { TSTART, READTOK, EXPR, TERM, FACTOR };
+
+// Class for main VM Stack
+class StackVM {
+	i32 pc = 100;	//Program Counter
+	i32 sp = 0;		//Stack Pointer
+	vector<i32> memory; //Assign Memory
+	i32 typ = 0;	//Type Register
+	i32 dat = 0;	//Data Register
+	i32 running = 1;//Running Flag
+
+	//Private Functions
+	i32 getType(i32 instruction);
+	i32 getData(i32 instruction);
+	void fetch();
+	void decode();
+	void execute();
+	void doPrimitive();
+
+public:
+	//Public Functions
+	StackVM();
+	void run();
+	void loadProgram(vector<i32> prog);
+};
 
 // Class for a token
 class Token {
