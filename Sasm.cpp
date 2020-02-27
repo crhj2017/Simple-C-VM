@@ -74,17 +74,11 @@ vector<i32> compileToInstruction(strings s) {
 		if (isInteger(s[i])) {
 			instructions.push_back(stoi(s[i]));
 		}
-		else if (isPrimitive(s[i][0])){
-			// Check operator type
-			i32 instruction = mapToNumber(s[i]);
-			if (instruction != -1) {
-				instructions.push_back(instruction);
-			}
-
-			// Return error if instruction undefined in compiler
-			else {
-				cout << "Error: Invalid instruction \"" << s[i] << "\"" << endl;
-			}
+		else if (mapToNumber(s[i]) != -1){
+				instructions.push_back(mapToNumber(s[i]));
+		}
+		else {
+			cout << "Error: Invalid instruction [" << s[i] << "]" << endl;
 		}
 	}
 
