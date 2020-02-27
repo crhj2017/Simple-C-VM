@@ -1,9 +1,7 @@
-#include "Lexer.h"
+#include "Sasm.h"
 
 //Functions
 vector<i32> compileToInstruction(strings s);
-bool isInteger(string s);
-bool isPrimitive(char c);
 i32 mapToNumber(string s);
 
 int main() {
@@ -30,9 +28,8 @@ int main() {
 	
 	// Output tokens
 	cout << "Lexed:" << endl;
-
 	for (size_t x = 0; x < lexemes.size(); x ++) {
-		cout << lexemes[x].tokType << ": " << lexemes[x].tokVal << "\n";
+		cout << "\'" <<lexemes[x].tokVal << "\'";
 	}
 	
 	// Parse the tokens
@@ -41,16 +38,24 @@ int main() {
 	// Get Postorder traversal of AST
 	string POS[256]; vector<string> postOrder;
 	postorderPrint(p, POS);
-
+	
+	cout << "\n\nParsed:\n";
 	for (const string& text : POS)
 		if (text != "") {
 			postOrder.push_back(text);
 			cout << text;
 		}
 	
-	// Compile to instructions
+	// Compile the AST
 	vector<i32> instructions = compileToInstruction(postOrder);
 	
+	cout << "\n\nCompiled:\n";
+	for (i32 i = 0; i < instructions.size(); i++) {
+		cout << instructions[i];
+	}
+	
+	// Stack-VM runs the compiled program
+	cout << "\n\nStack-VM:\n";
 	StackVM vm;
 	vm.loadProgram(instructions);
 	vm.run();
@@ -96,18 +101,6 @@ bool isInteger(string s) {
 		break;
 	}
 	return true;
-}
-
-bool isPrimitive(char c) {
-	switch (c) {
-	case '+':
-	case '-':
-	case '/':
-	case '*':
-		return true;
-	default:
-		return false;
-	}
 }
 
 i32 mapToNumber(string s) {
