@@ -1,5 +1,4 @@
-#include "Stack-VM.h"
-using namespace std;
+#include "Lexer.h"
 
 /*
 Instruction format
