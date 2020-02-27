@@ -53,53 +53,38 @@ BinaryTree* buildParseTree(tokvector tokens) {
     int z = 0;
     typeState tState = TSTART;
 
-    while (z < len) {
-        switch (tState) {
-        case TSTART:
-            if (tokens[z].tokVal == "(" || tokens[z].tokType == "Number") {
-                currentTree->insertLeft("");
-                parentStack.push(currentTree);
-                currentTree = currentTree->getLeftChild();
-                z++;
-                tState = READTOK;
-            }
-        case READTOK:
-            if (tokens[z].tokVal == "(") {
-                currentTree->insertLeft("");
-                parentStack.push(currentTree);
-                currentTree = currentTree->getLeftChild();
-                tState = READTOK; z++;
-            }
+    for(int z = 0; z < tokens.size(); z++){
+        if (tokens[z].tokVal == "(") {
+            currentTree->insertLeft("");
+            parentStack.push(currentTree);
+            currentTree = currentTree->getLeftChild();
+        }
 
-            // Operators push  the pointer to right child
-            else if (find(vect.begin(), vect.end(), tokens[z].tokVal) != vect.end()) {
+        // Operators push  the pointer to right child
+        else if (find(vect.begin(), vect.end(), tokens[z].tokVal) != vect.end()) {
+            currentTree->setRootVal(tokens[z].tokVal);
+            currentTree->insertRight("");
+            parentStack.push(currentTree);
+            currentTree = currentTree->getRightChild();
+        }
+
+        // Close brackets backtracks
+        else if (tokens[z].tokVal == ")") {
+            currentTree = parentStack.top();
+            parentStack.pop();
+        }
+
+        // Number sets val and backtracks
+        else if (find(vect2.begin(), vect2.end(), tokens[z].tokVal) == vect2.end()) {
+            try {
                 currentTree->setRootVal(tokens[z].tokVal);
-                currentTree->insertRight("");
-                parentStack.push(currentTree);
-                currentTree = currentTree->getRightChild();
-                tState = READTOK; z++;
-            }
-
-            // Close brackets backtracks
-            else if (tokens[z].tokVal == ")") {
-                currentTree = parentStack.top();
+                BinaryTree* parent = parentStack.top();
                 parentStack.pop();
-                tState = READTOK; z++;
+                currentTree = parent;
             }
 
-            // Number sets val and backtracks
-            else if (find(vect2.begin(), vect2.end(), tokens[z].tokVal) == vect2.end()) {
-                try {
-                    currentTree->setRootVal(tokens[z].tokVal);
-                    BinaryTree* parent = parentStack.top();
-                    parentStack.pop();
-                    currentTree = parent;
-                    tState = READTOK; z++;
-                }
-
-                catch (string ValueError) {
-                    cerr << "token " << tokens[z].tokVal << " is not a valid integer" << endl;
-                }
+            catch (string ValueError) {
+                cerr << "token " << tokens[z].tokVal << " is not a valid integer" << endl;
             }
         }
     }
