@@ -53,7 +53,7 @@ tokvector Lexer::lex(string s) {
 				}
 				state = READCHAR;
 			}
-			else if(isspecial(s[i]) || isPrimitive(s[i])){
+			else if(isspecial(s[i])){
 				if (j == 0) {
 					lexeme[j] = s[i];
 					j++;
@@ -136,19 +136,6 @@ tokvector Lexer::lex(string s) {
 	return strlst;
 }
 
-// Defines a primitive operation
-bool isPrimitive(char c) {
-	switch (c) {
-	case '+':
-	case '-':
-	case '*':
-	case '/':
-		return true;
-	default:
-		return false;
-	}
-}
-
 // Function defining a space
 bool Lexer::my_isspace(char c) {
 	switch (c) {
@@ -186,6 +173,10 @@ bool Lexer::isspecial(char c) {
 	switch (c) {
 	case '(':
 	case ')':
+	case '+':
+	case '-':
+	case '*':
+	case '/':
 	case ';':
 		return true;
 	default:
