@@ -4,31 +4,30 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <fstream>
+#include <cstdlib>
+#include <stack>
+#include <sstream>
+#include <algorithm>
 using namespace std;
 
 typedef uint8_t byte; //Defines a byte
 typedef vector<string> strings;
 
-enum State : byte { //Defines byte's possible states
-	START,
-	READCHAR,
-	READBLOCK,
-	SKIP,
-	DUMP,
-	COMMENT,
-	END
-};
+//Defines byte's possible states
+enum State : byte { START, READCHAR, READBLOCK, SKIP, DUMP, COMMENT, END };
+enum typeState { TSTART, READTOK, EXPR, TERM, FACTOR };
 
 // Class for a token
 class Token {
 public:
-	strings Type = { "Operator","Number","Identifier","Equal","Keyword","End","Unexpected" };
-
 	// Token attributes
 	string tokType;
 	string tokVal;
+	strings Type = { "Operator","Number","Identifier","Equal","Keyword","End","lParen","rParen","Unexpected" };
 
-	// Constructor function
+	// Constructor functions
+	Token();
 	Token(string value) {
 		tokVal = value;
 		if (value == "+" || value == "-" || value == "*" || value == "/") {
@@ -51,6 +50,12 @@ public:
 		else if (value == ";") {
 			tokType = Type[5];
 		}
+		else if (value == "(") {
+			tokType = Type[6];
+		}
+		else if (value == ")") {
+			tokType = Type[7];
+		}
 		else {
 			tokType = Type[6];
 		}
@@ -70,4 +75,29 @@ class Lexer { //Class for Lexer
 public:
 	tokvector lex(string s);
 };
+
+class BinaryTree {
+private:
+	string key;
+	BinaryTree* leftChild;
+	BinaryTree* rightChild;
+
+public:
+	BinaryTree(string rootObj) {
+		this->key = rootObj;
+		this->leftChild = NULL;
+		this->rightChild = NULL;
+	}
+
+	void insertLeft(string newNode);
+	void insertRight(string newNode);
+	BinaryTree* getRightChild();
+	BinaryTree* getLeftChild();
+	void setRootVal(string obj);
+	string getRootVal();
+};
+
+// Definition of parse function taking stream of tokens
+BinaryTree* buildParseTree(tokvector tokens);
+void postorderPrint(BinaryTree* pt, string arr[]);
 #endif
