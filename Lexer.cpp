@@ -3,10 +3,7 @@
 tokvector Lexer::lex(string s) {
 	tokvector strlst;
 	char lexeme[256];
-	int i = 0;
-	int j = 0; 
-	int done = 0;
-	int balance = 0;
+	int i = 0, j = 0, balance = 0;
 	State state = START;
 	int len = s.length();
 
@@ -47,10 +44,7 @@ tokvector Lexer::lex(string s) {
 			if (my_isspace(s[i])) {
 				state = DUMP;
 			}
-				
-			else if (s[i] == '\\') {
-				i += 2;
-			}
+			
 			else if (isgroup(s[i])) {
 				if (s[i] == '"') {
 					lexeme[j] = s[i];
@@ -59,7 +53,7 @@ tokvector Lexer::lex(string s) {
 				}
 				state = READCHAR;
 			}
-			else if(isspecial(s[i])){
+			else if(isspecial(s[i]) || isPrimitive(s[i])){
 				if (j == 0) {
 					lexeme[j] = s[i];
 					j++;
@@ -67,9 +61,11 @@ tokvector Lexer::lex(string s) {
 				}
 				state = DUMP;
 			}
-			else if (s[i] == '/' && s[i + 1] == '/') {
-				i += 2;
-				state = COMMENT;
+				
+			// Handle comments
+			else if (s[i] == '/' && s[i + 1] == '/') { 
+				i += 2; 
+				state = COMMENT; 
 			}
 			else {
 				lexeme[j] = s[i];
@@ -94,7 +90,6 @@ tokvector Lexer::lex(string s) {
 				}
 			}
 			else if (end_char == '"' && s[i] == '\\') {
-				//TO DO fix this to accurately record the chars
 				i += 2;
 			}
 			else {
@@ -141,6 +136,19 @@ tokvector Lexer::lex(string s) {
 	return strlst;
 }
 
+// Defines a primitive operation to the Lexer
+bool Lexer::isPrimitive(char c) {
+	switch (c) {
+	case '+':
+	case '-':
+	case '*':
+	case '/':
+		return true;
+	default:
+		return false;
+	}
+}
+
 // Function defining a space
 bool Lexer::my_isspace(char c) {
 	switch (c) {
@@ -163,10 +171,8 @@ bool Lexer::isgroup(char c) {
 	case '"':
 		end_char = '"';
 		return true;
-	case '(':
-		end_char = ')';
-		return true;
-	case ')':
+	case '[':
+		end_char = ']';
 		return true;
 	default:
 		return false;
@@ -178,8 +184,8 @@ bool Lexer::isgroup(char c) {
 bool Lexer::isspecial(char c) {
 	beg_char = c;
 	switch (c) {
-	case '[':
-	case ']':
+	case '(':
+	case ')':
 	case ';':
 		return true;
 	default:
