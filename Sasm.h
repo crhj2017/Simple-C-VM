@@ -15,7 +15,6 @@ using namespace std;
 typedef uint8_t byte; 
 typedef int32_t i32;
 
-bool isPrimitive(char c);
 bool isInteger(string s);
 
 typedef vector<string> strings;
