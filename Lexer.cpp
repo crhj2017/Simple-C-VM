@@ -1,4 +1,4 @@
-#include "Lexer.h"
+#include "Sasm.h"
 
 tokvector Lexer::lex(string s) {
 	tokvector strlst;
@@ -136,8 +136,8 @@ tokvector Lexer::lex(string s) {
 	return strlst;
 }
 
-// Defines a primitive operation to the Lexer
-bool Lexer::isPrimitive(char c) {
+// Defines a primitive operation
+bool isPrimitive(char c) {
 	switch (c) {
 	case '+':
 	case '-':
